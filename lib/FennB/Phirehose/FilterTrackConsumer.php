@@ -14,12 +14,14 @@ class FilterTrackConsumer extends OauthPhirehose
     /**
     * Setup the MongoDB connection
     */
-    public function setup($mongoConnectString, $mongoDbName, $mongoCollectionName)
+    public function setup($mongoConnectString, $mongoUser, $mongoPassword, $mongoDbName, $mongoCollectionName, $twitterKey, $twitterSecret)
     {
-        $this->tags = $tags;
+        // twitter auth
+        $this->consumerKey = $twitterKey;
+        $this->consumerSecret = $twitterSecret;
         
         // connect
-        $this->mongo = new MongoClient($mongoConnectString);
+        $this->mongo = new \MongoClient($mongoConnectString, array('username' => $mongoUser, 'password' => $mongoPassword));
 
         // select a database
         $this->db = $this->mongo->$mongoDbName;
@@ -31,7 +33,7 @@ class FilterTrackConsumer extends OauthPhirehose
     /**
     * Stubbed out to do nothing
     */
-    public function log($message)
+    public function log($message, $level = 'notice')
     {
     }
  
@@ -45,6 +47,8 @@ class FilterTrackConsumer extends OauthPhirehose
         // insert the tweet into the mongo DB
         $document = array( "tweet" => $status );
         $this->collection->insert($document);
+        
+        /* DEBUG OUTPUT
         $data = json_decode($status, true);
         if (is_array($data) && isset($data['user']['screen_name'])) 
         {
@@ -57,5 +61,6 @@ class FilterTrackConsumer extends OauthPhirehose
         
             print implode(",", $hashtags) . "\n";
         }
+        */
     }
 }
