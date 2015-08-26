@@ -44,11 +44,16 @@ class FilterTrackConsumer extends OauthPhirehose
     */
     public function enqueueStatus($status)
     {
+        static $t = 0;
+        static $count = 0;
+        static $last_count = 0;
+        
         // insert the tweet into the mongo DB
         $document = array( "tweet" => $status );
         $this->collection->insert($document);
+        $count++;
         
-        /* DEBUG OUTPUT
+        /* FULL DEBUG OUTPUT
         $data = json_decode($status, true);
         if (is_array($data) && isset($data['user']['screen_name'])) 
         {
@@ -62,5 +67,14 @@ class FilterTrackConsumer extends OauthPhirehose
             print implode(",", $hashtags) . "\n";
         }
         */
+        
+        // Every 30 seconds output a summary of the number of tweets recorded in the last 30
+        if (time() > $t)
+        {
+            $t = time() + 30;
+            
+            echo "Received $count tweets total, with ".($count-$last_count)." in the last 30 seconds\n";
+            $last_count = $count;
+        }
     }
 }
