@@ -21,7 +21,7 @@ class FilterTrackConsumer extends OauthPhirehose
         $this->consumerSecret = $twitterSecret;
         
         // connect
-        $this->mongo = new \MongoClient($mongoConnectString, array('username' => $mongoUser, 'password' => $mongoPassword));
+        $this->mongo = new \MongoClient($mongoConnectString, array('username' => $mongoUser, 'password' => $mongoPassword, 'db' => $mongoDbName));
 
         // select a database
         $this->db = $this->mongo->$mongoDbName;
